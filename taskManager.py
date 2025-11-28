@@ -1,10 +1,10 @@
-
 import os
 import json
 import datetime
 
 DATA_FILE = "tasks.json"
 LOG_FILE = "task_manager.log"
+
 class Task:
     def __init__(self, id, title, completed=False, tags=None, created=None, updated=None):
         self.id = id
@@ -50,12 +50,10 @@ class TaskManager:
             self.counter = int(data.get("counter", self.counter))
             self.tasks = [Task.from_dict(d) for d in tasks_data]
             self.log(f"Loaded {len(self.tasks)} tasks from disk.")
-
         except (json.JSONDecodeError, ValueError, TypeError) as e:
             self.tasks = []
             self.counter = 1
             self.log(f"ERROR loading tasks: {e}. Starting with empty task list.")
-
 
     def save(self):
         with open(DATA_FILE, "w") as f:
@@ -93,16 +91,6 @@ class TaskManager:
                 return
         print("Task not found.")
 
-    def delete_task(self, id):
-        for i, t in enumerate(self.tasks):
-            if t.id == id:
-                self.tasks.pop(i)
-                self.save()
-                self.log(f"Deleted task {id}")
-                print("Deleted:", t)
-                return
-        print("Task not found.")
-
     def search(self, term):
         found = [t for t in self.tasks if term.lower() in t.title.lower()]
         if not found:
@@ -130,10 +118,9 @@ def menu():
         print("2) List Tasks (uncompleted)")
         print("3) List All Tasks")
         print("4) Complete Task")
-        print("5) Delete Task")
-        print("6) Search Tasks")
-        print("7) Tag Task")
-        print("8) Exit")
+        print("5) Search Tasks")
+        print("6) Tag Task")
+        print("7) Exit")
         choice = input("> ").strip()
         if choice == "1":
             title = input("Title: ").strip()
@@ -146,12 +133,10 @@ def menu():
         elif choice == "4":
             mgr.complete_task(int(input("ID: ")))
         elif choice == "5":
-            mgr.delete_task(int(input("ID: ")))
-        elif choice == "6":
             mgr.search(input("Search term: "))
-        elif choice == "7":
+        elif choice == "6":
             mgr.tag_task(int(input("ID: ")), input("Tags (comma): ").split(","))
-        elif choice == "8":
+        elif choice == "7":
             print("Bye!")
             break
         else:
